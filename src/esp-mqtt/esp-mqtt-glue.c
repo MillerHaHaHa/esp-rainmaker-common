@@ -364,6 +364,26 @@ static esp_err_t esp_mqtt_glue_init(esp_rmaker_mqtt_conn_params_t *conn_params)
     mqtt_data->conn_params = conn_params;
 
 #if ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL(5, 0, 0)
+#if CONFIG_USE_YS_MQTT_SERVER
+    ESP_LOGI(TAG, "11111111111 USE YS MQTT SERVER");
+    const esp_mqtt_client_config_t mqtt_client_cfg = {
+        .broker = {
+            .address.uri = "mqtts://192.168.0.109:8883",
+            .verification.certificate = (const char *)conn_params->server_cert,
+            .verification.skip_cert_common_name_check = 1,
+        },
+        .credentials = {
+            .username = "ysiot",
+            .authentication.password = "123",
+            .client_id = (const char *)conn_params->client_id,
+        },
+        .session = {
+            .disable_clean_session = 1,
+        },
+    };
+    ESP_LOGI(TAG, "%s", mqtt_client_cfg.broker.verification.certificate);
+#else
+    ESP_LOGI(TAG, "22222222222 USE ESP MQTT SERVER");
     const esp_mqtt_client_config_t mqtt_client_cfg = {
         .broker = {
             .address = {
@@ -403,6 +423,7 @@ static esp_err_t esp_mqtt_glue_init(esp_rmaker_mqtt_conn_params_t *conn_params)
 #endif /* CONFIG_ESP_RMAKER_MQTT_PERSISTENT_SESSION */
         },
     };
+#endif /* CONFIG_USE_YS_MQTT_SERVER */
 #else
     const esp_mqtt_client_config_t mqtt_client_cfg = {
         .host = conn_params->mqtt_host,

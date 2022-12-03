@@ -26,6 +26,8 @@ extern "C"
 #define RMAKER_MQTT_QOS0    0
 #define RMAKER_MQTT_QOS1    1
 
+#define CONFIG_USE_YS_MQTT_SERVER   0
+
 /** MQTT Connection parameters */
 typedef struct {
     /** MQTT Host */
