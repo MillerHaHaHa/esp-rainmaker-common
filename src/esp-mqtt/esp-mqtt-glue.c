@@ -23,6 +23,8 @@
 #include <esp_rmaker_common_events.h>
 #include <esp_rmaker_mqtt_glue.h>
 #include <esp_idf_version.h>
+#include "user_debug_header.h"
+
 #if ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL(4, 1, 0)
 // Features supported in 4.1+
 
@@ -364,24 +366,30 @@ static esp_err_t esp_mqtt_glue_init(esp_rmaker_mqtt_conn_params_t *conn_params)
     mqtt_data->conn_params = conn_params;
 
 #if ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL(5, 0, 0)
-#if CONFIG_USE_YS_MQTT_SERVER
+#if USE_YS_MQTT_BROKER
     ESP_LOGI(TAG, "11111111111 USE YS MQTT SERVER");
     const esp_mqtt_client_config_t mqtt_client_cfg = {
-        .broker = {
-            .address.uri = "mqtts://192.168.0.109:8883",
-            .verification.certificate = (const char *)conn_params->server_cert,
-            .verification.skip_cert_common_name_check = 1,
-        },
+        .broker.address.uri = "mqtts://8.135.99.85:8883",
+        .broker.verification.certificate = (const char *)conn_params->server_cert,
+        .broker.verification.skip_cert_common_name_check = 1,
         .credentials = {
             .username = "ysiot",
-            .authentication.password = "123",
-            .client_id = (const char *)conn_params->client_id,
-        },
-        .session = {
-            .disable_clean_session = 1,
-        },
+            .authentication = {
+                .password = "cwarMTmnASF#$!@",
+                .certificate = (const char *)conn_params->client_cert,
+                .key = (const char *)conn_params->client_key,
+            },
+        }
+        // .session = {
+        //     .disable_clean_session = 1,
+        // },
     };
+    ESP_LOGI(TAG, "2222222222 USE YS MQTT SERVER CA");
     ESP_LOGI(TAG, "%s", mqtt_client_cfg.broker.verification.certificate);
+    ESP_LOGI(TAG, "3333333333 USE YS MQTT Client PEM");
+    ESP_LOGI(TAG, "%s", mqtt_client_cfg.credentials.authentication.certificate);
+    ESP_LOGI(TAG, "4444444444 USE YS MQTT Client KEY");
+    ESP_LOGI(TAG, "%s", mqtt_client_cfg.credentials.authentication.key);
 #else
     ESP_LOGI(TAG, "22222222222 USE ESP MQTT SERVER");
     const esp_mqtt_client_config_t mqtt_client_cfg = {
@@ -423,7 +431,7 @@ static esp_err_t esp_mqtt_glue_init(esp_rmaker_mqtt_conn_params_t *conn_params)
 #endif /* CONFIG_ESP_RMAKER_MQTT_PERSISTENT_SESSION */
         },
     };
-#endif /* CONFIG_USE_YS_MQTT_SERVER */
+#endif /* USE_YS_MQTT_BROKER */
 #else
     const esp_mqtt_client_config_t mqtt_client_cfg = {
         .host = conn_params->mqtt_host,

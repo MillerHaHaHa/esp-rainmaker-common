@@ -3,7 +3,7 @@ set(priv_req "mqtt" "nvs_flash")
 
 # from IDF version 5.0, we need to explicitly specify requirements
 if("${IDF_VERSION_MAJOR}.${IDF_VERSION_MINOR}" VERSION_GREATER_EQUAL "5.0")
-    list(APPEND priv_req esp_wifi)
+    list(APPEND priv_req esp_wifi user_debug_header)
     set(requires esp_event)
 endif()
 #if(CONFIG_ESP_RMAKER_LIB_ESP_MQTT)
